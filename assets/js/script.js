@@ -218,8 +218,8 @@ function pesquisarUrl(search) {
             let s = window.getComputedStyle(li)
             let numChildren = s.flex.split(' ').length
         })
-        quadro()
-    });
+    })
+    quadro()
 }
 
 ////---- função que adiciona Display flex ou None ao fazer pesquisa 
@@ -231,7 +231,7 @@ function quadro() {
         //---- Seleciona todos os elementos li dentro da ul
         const liList = ul.querySelectorAll('li');
 
-        let count = 0;
+        let count = 0
 
         // Percorre a lista de elementos li e verifica se o display é flex
         for (let i = 0; i < liList.length; i++) {
@@ -249,6 +249,7 @@ function quadro() {
         console.log("contagem", count); // exibe a quantidade de elementos li com display flex
     })
 }
+
 
 ////---- função de evento para filtrar urls
 inputLink.addEventListener('input', () => { pesquisarUrl(inputLink.value) })

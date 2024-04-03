@@ -11,7 +11,10 @@ function buscarNoGoogle(){
         const url = `https://www.google.com/search?q=${query}`;
     
         // Redirecione o usuário para a página de resultados do Google
-        window.location.href = url;
+        //window.location.href = url;
+
+        // abre a url em uma nova aba 
+        window.open(url, '_blank')
     }
 }
 
@@ -33,7 +36,9 @@ function buscarNoYoutube(){
     const url = `https://www.youtube.com/results?search_query=${query}`;
 
     // Redirecione o usuário para a página de resultados do YouTube
-    window.location.href = url;
+    //window.location.href = url;
+    
+    window.open(url, '_blank')
     }
 }
 
