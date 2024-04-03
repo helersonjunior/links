@@ -9,11 +9,59 @@ let links
 ////////// local storage //////////
 ///////////////////////////////////
 
-function getLocalStorage() {
-    return JSON.parse(localStorage.getItem('urls')) || []
+async function getLocalStorage() {    
+    try {
+        const documentRef = await db.collection('pagina_links').doc('links')
+        // Ler o documento
+        documentRef.get()
+            .then((docSnapshot) => {
+                if (docSnapshot.exists) {
+                    // O documento existe
+                    //console.log(docSnapshot.data().links)
+                    links = JSON.parse(docSnapshot.data().links)
+                    load()
+                } else {
+                    console.log("O documento não foi encontrado.")
+                }
+            })
+            .catch((error) => {
+                console.log("Erro ao ler documento:", error)
+            })
+    } catch (error) {
+        console.log(error)
+    }
 }
-function salvarLocalStorare() {
-    localStorage.setItem('urls', JSON.stringify(links))
+
+async function salvarLocalStorare() {
+
+    if (links) {
+
+        try {
+            // Referência ao documento de contagem de refreshes
+            const linksRef = await db.collection('pagina_links').doc('links')
+
+            // Incrementar contador de refreshes
+            linksRef.get().then(doc => {
+                if (doc.exists) {
+                    linksRef.update({ links: JSON.stringify(links)}).then(
+                        spanInfo.innerText = 'Salvo',
+                        hidenSpanInfo(),
+                        getLocalStorage()
+                    )
+                } else {
+                    linksRef.set({ links: JSON.stringify(links) })
+                    spanInfo.innerText = 'Salvo'
+                }
+            }).catch(error => {
+                console.log("Erro ao acessar o Firestore:", error)
+                spanInfo.innerText = 'Erro ao acessar'
+            })
+        } catch (error) {
+            console.log(error)
+            spanInfo.innerText = 'Error'
+            hidenSpanInfo()
+        }
+    }
 }
 
 ///////////////////////////////////
@@ -21,17 +69,15 @@ function salvarLocalStorare() {
 ///////////////////////////////////
 
 ////---- função inicial que adiciona os dados na tela
-function load() {
+async function load() {
     console.log("inicio")
-    links = getLocalStorage()
     section.innerHTML = ""
     select.innerHTML = ""
-
     links.forEach((item, index) => {
-
         section.innerHTML += `
         <div id="${index}" class="card">
-          <h3>${item.name}</h3>
+          <h3>${item.name} <span onclick="mudarIndex(${index})">&#8657;</span></h3>
+         
           <ul class="ul" id="${index}">
           </ul>
         </div>
@@ -66,7 +112,6 @@ function criar() {
         novoBloco.value = ''
         novaUrl.value = ''
         salvarLocalStorare()
-        load()
     }
 }
 
@@ -77,7 +122,6 @@ function add() {
         console.log('adicionado', endereco.value)
         endereco.value = ''
         salvarLocalStorare()
-        load()
     }
 }
 
@@ -101,8 +145,6 @@ function deletar() {
 
     document.querySelector('.containerModal-2').style.display = 'none'
     salvarLocalStorare()
-    load()
-
 }
 
 ///////////////////////////////////
@@ -176,12 +218,10 @@ function lerArquivo() {
         reader.readAsText(file);
         reader.onload = function() {
           var conteudo = reader.result;
-           localStorage.setItem('urls', conteudo)
+          links = JSON.parse(conteudo)
         } 
- 
-         // load() 
-         location.reload() 
-         modal.style.display = 'none'
+        salvarLocalStorare()
+        modal.style.display = 'none'
     }else{
         alert('arquivo invalido')
     }
@@ -246,7 +286,7 @@ function quadro() {
         if (count < 1) {
             ul.parentNode.style.display = 'none'
         }
-        console.log("contagem", count); // exibe a quantidade de elementos li com display flex
+        //console.log("contagem", count); // exibe a quantidade de elementos li com display flex
     })
 }
 
@@ -274,8 +314,21 @@ function atribuirEventosDeClique() {
     });
 }
 
+function mudarIndex(index){
+    console.log('Index', index)
+    if(index > 0){ 
+    let primeiro = links[index -1]
+    let selecionado = links[index]
 
+    links[index - 1] = selecionado
+    links[index] = primeiro
 
-load()
+    console.log(links)
+
+    salvarLocalStorare()
+    }
+}
+
+getLocalStorage()
 
 

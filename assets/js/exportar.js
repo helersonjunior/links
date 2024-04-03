@@ -1,6 +1,6 @@
 function exportar(){
     console.log('baixar')    
-    let linksUrl = JSON.stringify(getLocalStorage())
+    let linksUrl = JSON.stringify(links)
     
     const conteudoArquivo = linksUrl; // Conteúdo do arquivo
     
